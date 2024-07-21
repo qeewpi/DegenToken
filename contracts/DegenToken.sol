@@ -56,6 +56,15 @@ contract DegenToken is ERC20, Ownable, ERC20Burnable {
         userClothingBalances[msg.sender][itemId] += quantity;
     }
 
+    function redeemClothingItem(uint256 itemId, uint256 quantity) external {
+        require(clothingItems[itemId].available, "Clothing item not available");
+        uint256 totalPrice = clothingItems[itemId].price * quantity;
+        require(userClothingBalances[msg.sender][itemId] >= quantity, "You do not have enough of this item to redeem");
+        
+        userClothingBalances[msg.sender][itemId] -= quantity;
+        _mint(msg.sender, totalPrice);  // Mint tokens back to the user
+    }
+
     function getClothingItem(uint256 itemId) external view returns (string memory, uint256, bool) {
         ClothingItem memory item = clothingItems[itemId];
         return (item.name, item.price, item.available);

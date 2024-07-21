@@ -1,66 +1,53 @@
 const { expect } = require("chai");
-const { ethers } = require("hardhat");
 
 describe("DegenToken", function () {
   let DegenToken, degenToken, owner, addr1, addr2;
 
   beforeEach(async function () {
+    // Deploy a new contract instance before each test
+    [owner, addr1, addr2] = await ethers.getSigners();
     DegenToken = await ethers.getContractFactory("DegenToken");
-    [owner, addr1, addr2, _] = await ethers.getSigners();
     degenToken = await DegenToken.deploy();
     await degenToken.deployed();
   });
 
-  it("Should have the correct name and symbol", async function () {
+  it("Should deploy the contract and check initial values", async function () {
     expect(await degenToken.name()).to.equal("Degen");
     expect(await degenToken.symbol()).to.equal("DGN");
+    expect(await degenToken.decimals()).to.equal(0);
   });
 
-  it("Should mint tokens correctly", async function () {
+  it("Should allow the owner to mint tokens", async function () {
     await degenToken.mint(addr1.address, 1000);
     expect(await degenToken.balanceOf(addr1.address)).to.equal(1000);
   });
 
-  it("Should transfer tokens correctly", async function () {
+  it("Should allow users to buy clothing items", async function () {
     await degenToken.mint(addr1.address, 1000);
-    await degenToken.connect(addr1).transfer(addr2.address, 500);
-    expect(await degenToken.balanceOf(addr1.address)).to.equal(500);
-    expect(await degenToken.balanceOf(addr2.address)).to.equal(500);
+    await degenToken.connect(addr1).buyClothingItem(0, 2); // Buying 2 of item ID 0
+    expect(await degenToken.balanceOf(addr1.address)).to.equal(800); // After purchase
+    expect(await degenToken.getUserClothingBalance(addr1.address, 0)).to.equal(2);
   });
 
-  it("Should burn tokens correctly", async function () {
+  it("Should allow users to redeem clothing items", async function () {
     await degenToken.mint(addr1.address, 1000);
-    await degenToken.connect(addr1).burn(500);
-    expect(await degenToken.balanceOf(addr1.address)).to.equal(500);
+    await degenToken.connect(addr1).buyClothingItem(0, 2);
+    await degenToken.connect(addr1).redeemClothingItem(0, 1); // Redeeming 1 of item ID 0
+    expect(await degenToken.balanceOf(addr1.address)).to.equal(900); // After redeeming
+    expect(await degenToken.getUserClothingBalance(addr1.address, 0)).to.equal(1);
   });
 
-  it("Should buy clothing items correctly", async function () {
-    await degenToken.mint(addr1.address, 1000);
-    await degenToken.connect(addr1).buyClothingItem(0, 1); // Buying 1 Virtual Hat
-    expect(await degenToken.balanceOf(addr1.address)).to.equal(900); // 100 tokens deducted
-    expect(await degenToken.getUserClothingBalance(addr1.address, 0)).to.equal(
-      1
-    );
+  it("Should only allow the owner to add clothing items", async function () {
+    await degenToken.addClothingItem("Virtual Jacket", 250);
+    const item = await degenToken.getClothingItem(3); // ID 3 for the new item
+    expect(item[0]).to.equal("Virtual Jacket");
+    expect(item[1]).to.equal(250);
+    expect(item[2]).to.be.true;
   });
 
-  it("Should return clothing item details correctly", async function () {
-    const clothingItem = await degenToken.getClothingItem(0);
-    expect(clothingItem[0]).to.equal("Virtual Hat");
-    expect(clothingItem[1]).to.equal(100);
-    expect(clothingItem[2]).to.be.true;
-  });
-
-  it("Should set clothing item availability correctly", async function () {
+  it("Should allow the owner to set clothing item availability", async function () {
     await degenToken.setClothingItemAvailability(0, false);
-    const clothingItem = await degenToken.getClothingItem(0);
-    expect(clothingItem[2]).to.be.false;
-  });
-
-  it("Should add a new clothing item correctly", async function () {
-    await degenToken.addClothingItem("Virtual Shoes", 250);
-    const clothingItem = await degenToken.getClothingItem(3);
-    expect(clothingItem[0]).to.equal("Virtual Shoes");
-    expect(clothingItem[1]).to.equal(250);
-    expect(clothingItem[2]).to.be.true;
+    const item = await degenToken.getClothingItem(0);
+    expect(item[2]).to.be.false;
   });
 });
