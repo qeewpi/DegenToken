@@ -37,7 +37,6 @@ The Degen Token project involves creating an ERC-20 token on the Avalanche block
 
    ```plaintext
    PRIVATE_KEY=your_private_key
-   SNOWTRACE_API_KEY=your_snowtrace_api_key
    ```
 
 ### Executing Program
@@ -63,7 +62,7 @@ The Degen Token project involves creating an ERC-20 token on the Avalanche block
 4. **Verify the Smart Contract on Snowtrace:**
 
    ```bash
-   npx hardhat verify --network fuji <deployed_contract_address>
+   npx hardhat verify --network snowtrace <deployed_contract_address>
    ```
 
 ## Help
