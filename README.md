@@ -4,7 +4,7 @@ Degen Token is a unique ERC-20 token designed for Degen Gaming 🎮, a renowned 
 
 ## Description
 
-The Degen Token project involves creating an ERC-20 token on the Avalanche blockchain. The token can be earned, traded, and redeemed by players for in-game rewards. This project demonstrates the implementation of a basic ERC-20 token with functionalities such as minting, transferring, checking balances, and burning tokens.
+Degen Token is an ERC-20 token deployed on the Avalanche blockchain. This token is designed for a virtual reality clothing platform, where users can earn tokens by participating in the game, transfer tokens to others, redeem tokens for virtual clothing items, and check their token balance at any time. The project showcases the integration of blockchain technology in a gaming environment to enhance user engagement and create a seamless in-game economy.
 
 ## Getting Started
 
@@ -62,7 +62,7 @@ The Degen Token project involves creating an ERC-20 token on the Avalanche block
 4. **Verify the Smart Contract on Snowtrace:**
 
    ```bash
-   npx hardhat verify --network snowtrace <deployed_contract_address>
+   npx hardhat verify --network fuji <deployed_contract_address>
    ```
 
 ## Help

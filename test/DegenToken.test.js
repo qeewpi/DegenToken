@@ -33,4 +33,34 @@ describe("DegenToken", function () {
     await degenToken.connect(addr1).burn(500);
     expect(await degenToken.balanceOf(addr1.address)).to.equal(500);
   });
+
+  it("Should buy clothing items correctly", async function () {
+    await degenToken.mint(addr1.address, 1000);
+    await degenToken.connect(addr1).buyClothingItem(0, 1); // Buying 1 Virtual Hat
+    expect(await degenToken.balanceOf(addr1.address)).to.equal(900); // 100 tokens deducted
+    expect(await degenToken.getUserClothingBalance(addr1.address, 0)).to.equal(
+      1
+    );
+  });
+
+  it("Should return clothing item details correctly", async function () {
+    const clothingItem = await degenToken.getClothingItem(0);
+    expect(clothingItem[0]).to.equal("Virtual Hat");
+    expect(clothingItem[1]).to.equal(100);
+    expect(clothingItem[2]).to.be.true;
+  });
+
+  it("Should set clothing item availability correctly", async function () {
+    await degenToken.setClothingItemAvailability(0, false);
+    const clothingItem = await degenToken.getClothingItem(0);
+    expect(clothingItem[2]).to.be.false;
+  });
+
+  it("Should add a new clothing item correctly", async function () {
+    await degenToken.addClothingItem("Virtual Shoes", 250);
+    const clothingItem = await degenToken.getClothingItem(3);
+    expect(clothingItem[0]).to.equal("Virtual Shoes");
+    expect(clothingItem[1]).to.equal(250);
+    expect(clothingItem[2]).to.be.true;
+  });
 });
